@@ -8,28 +8,28 @@ import scala.concurrent.Future
 
 object Application extends Controller {
 
-	def index = Action {
-		Ok(views.html.index("See README file."))
-	}
+    def index = Action {
+        Ok(views.html.index("See README file."))
+    }
 
-	case class Author(name: String, email: String)
-	case class Commit(id: String, message: String, timestamp: String, url: String, author: Author)
-	implicit val authorReads = Json.reads[Author]
-	implicit val commitReads = Json.reads[Commit]
+    case class Author(name: String, email: String)
+    case class Commit(id: String, message: String, timestamp: String, url: String, author: Author)
+    implicit val authorReads = Json.reads[Author]
+    implicit val commitReads = Json.reads[Commit]
 
     // This is the action that GitLab will hit
     def commitHook = Action(parse.json) { request =>
-    	val commits = (request.body \ "commits").as[List[Commit]]
-    	commits.foreach(c => {
-	    	val result: Future[WsResponse] = {
-	    		WS.url("http://www.pivotaltracker.com/services/v3/source_commits")
-	    			.withHeaders(
-	    				CONTENT_TYPE -> "application/xml",
-	    				"X-TrackerToken" -> Play.current.configuration.getString("pivotal.token").getOrElse("")
-					)
-					.post(s"<source_commit><message>${c.message}</message><author>${c.author.email}</author><commit_id>${c.id}</commit_id><url>${c.url}</url></source_commit>")
-	    	}
-		})
-		Ok("")
-	}
+        val commits = (request.body \ "commits").as[List[Commit]]
+        commits.foreach(c => {
+            val result: Future[WsResponse] = {
+                WS.url("http://www.pivotaltracker.com/services/v3/source_commits")
+                    .withHeaders(
+                        CONTENT_TYPE -> "application/xml",
+                        "X-TrackerToken" -> Play.current.configuration.getString("pivotal.token").getOrElse("")
+                    )
+                    .post(s"<source_commit><message>${c.message}</message><author>${c.author.email}</author><commit_id>${c.id}</commit_id><url>${c.url}</url></source_commit>")
+            }
+        })
+        Ok("")
+    }
 }
