@@ -1,4 +1,11 @@
-This is your new Play 2.1 application
-=====================================
+Gitlab to Pivotal Tracker bridge
+================================
 
-This file will be packaged with your application, when using `play dist`.
+This app routes Gitlab commit hook requests to Pivotal Tracker's API.
+Just run it with 'play "start -Dpivotal.token=abcdefg1234"' and
+set "http://<ip:port of this app>/hook" as the Gitlab hook URI. Note
+that the actions on the tickets will show up as being made by whichever
+user owns the API token you use.
+
+Also, for info on how you need to format your commit messages to make it work,
+see https://www.pivotaltracker.com/help/api#scm_post_commit.
