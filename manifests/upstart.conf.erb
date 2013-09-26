@@ -1,0 +1,13 @@
+description "Gitlab-Pivotal bridge"
+author      "Ilkka Laukkanen <ilkka.s.laukkanen@gmail.com>"
+
+start on    (local-filesystems and net-device-up IFACE=eth0)
+stop on     shutdown
+
+respawn
+respawn limit 5 60
+
+script
+  exec sudo -u bridge <%= @app_path %>/target/universal/stage/bin/gitlabpivotalbridge -Dconfig.file=<%= @app_path %>/conf/prod.conf -DapplyEvolutions.default=true
+end script
+
