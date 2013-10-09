@@ -17,7 +17,7 @@ require 'etc'
 load 'deploy'
 
 set :application, 'GitlabPivotalBridge'
-set :repository,  'git@github.com:GitlabPivotalBridge.git'
+set :repository,  'git@github.com:ilkka/GitlabPivotalBridge.git'
 
 set :ssh_options, { :forward_agent => true }
 
