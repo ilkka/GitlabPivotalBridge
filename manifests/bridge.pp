@@ -1,6 +1,6 @@
 # vim: ft=puppet
 package { "curl":
-  ensure => installed
+  ensure => latest
 }
 
 user { "gitlab-bridge":
@@ -24,7 +24,7 @@ exec { "download-play":
 }
 
 package { "unzip":
-  ensure => installed
+  ensure => latest
 }
 
 exec { "unzip-play": 
@@ -41,7 +41,7 @@ file { "/home/gitlab-bridge/play":
 }
 
 package { "default-jdk":
-  ensure => installed
+  ensure => latest
 }
 
 exec { "package-app":
