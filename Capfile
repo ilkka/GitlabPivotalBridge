@@ -26,7 +26,7 @@ default_run_options[:pty] = true # should help with sudo password prompts, see h
 set :scm,    :git
 set :branch, 'master'
 
-set :user,           fetch(:user, 'deploy')
+set :user,           fetch(:user, 'gitlab-bridge')
 set :use_sudo,       false
 set :deploy_to,      "/opt/#{application}"
 set :prod_conf_path, "#{release_path}/conf/prod.conf"
@@ -38,7 +38,6 @@ after "deploy:restart", "restart"
 before "deploy:restart", "puppet"
 
 depend :remote, :command, "puppet"
-depend :remote, :command, "play"
 
 task :start do
   run "#{sudo} /sbin/start gitlabpivotalbridge"

@@ -8,6 +8,6 @@ respawn
 respawn limit 5 60
 
 script
-  exec sudo -u bridge <%= @app_path %>/target/universal/stage/bin/gitlabpivotalbridge -Dconfig.file=<%= @app_path %>/conf/prod.conf -DapplyEvolutions.default=true
+  exec sudo -u gitlab-bridge <%= @app_path %>/target/universal/stage/bin/gitlabpivotalbridge -Dconfig.file=<%= @app_path %>/conf/prod.conf -DapplyEvolutions.default=true
 end script
 
