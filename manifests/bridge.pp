@@ -31,8 +31,10 @@ file { "/opt/play":
   target => "/opt/play-2.2.0"
 }
 
-file { "/opt/play/play":
-  mode => "u+rwx,go+rx"
+exec { "fix-play-permissions":
+  require => [Exec["unzip-play"], File["/opt/play"]],
+  cwd => "/opt",
+  command => "find /opt/play/ -perm -u+x -type f|xargs chmod a+rx"
 }
 
 package { "default-jdk":
