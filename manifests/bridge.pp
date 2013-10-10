@@ -34,7 +34,7 @@ file { "/opt/play":
 exec { "fix-play-permissions":
   require => [Exec["unzip-play"], File["/opt/play"]],
   cwd => "/opt",
-  command => "find /opt/play/ -perm -u+x -type f|xargs chmod a+rx"
+  command => "/usr/bin/find /opt/play/ -perm -u+x -type f|xargs chmod a+rx"
 }
 
 package { "default-jdk":
