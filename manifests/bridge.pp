@@ -31,7 +31,7 @@ exec { "unzip-play":
   require => [Package["unzip"], Exec["download-play"], User["gitlab-bridge"]],
   user => "gitlab-bridge",
   cwd => "/home/gitlab-bridge",
-  command => "/usr/bin/unzip play-2.2.0.zip",
+  command => "/usr/bin/unzip /opt/play-2.2.0.zip",
   creates => "/home/gitlab-bridge/play-2.2.0"
 }
 
