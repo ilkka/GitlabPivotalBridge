@@ -54,7 +54,7 @@ task :puppet do
   transaction do
     run "env "\
       "FACTER_app_path=#{release_path} "\
-      "#{sudo} -E puppet apply #{release_path}/manifests/bridge.pp"
+      "#{sudo} -E puppet apply --detailed-exitcodes #{release_path}/manifests/bridge.pp"
   end
 end
 
