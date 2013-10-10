@@ -31,6 +31,10 @@ file { "/opt/play":
   target => "/opt/play-2.2.0"
 }
 
+file { "/opt/play/play":
+  mode => "u+rwx,go+rx"
+}
+
 package { "default-jdk":
   ensure => installed
 }
