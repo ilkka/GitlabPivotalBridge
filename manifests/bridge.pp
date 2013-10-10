@@ -5,7 +5,15 @@ package { "curl":
 
 user { "gitlab-bridge":
   ensure => present,
-  groups => ["deploy"]
+  groups => ["deploy"],
+  home => "/home/gitlab-bridge"
+}
+
+file { "/home/gitlab-bridge",
+  require => User["gitlab-bridge"],
+  ensure => directory,
+  mode => 0755,
+  owner => "gitlab-bridge"
 }
 
 exec { "download-play":
