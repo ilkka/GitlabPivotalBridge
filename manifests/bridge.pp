@@ -20,21 +20,16 @@ package { "unzip":
 }
 
 exec { "unzip-play": 
-  require => [Package["unzip"], Exec["download-play"]],
-  cwd => "/opt",
+  require => [Package["unzip"], Exec["download-play"], User["gitlab-bridge"]],
+  user => "gitlab-bridge",
+  cwd => "/home/gitlab-bridge",
   command => "/usr/bin/unzip play-2.2.0.zip",
-  creates => "/opt/play-2.2.0"
+  creates => "/home/gitlab-bridge/play-2.2.0"
 }
 
-file { "/opt/play":
+file { "/home/gitlab-bridge/play":
   ensure => link,
-  target => "/opt/play-2.2.0"
-}
-
-exec { "fix-play-permissions":
-  require => [Exec["unzip-play"], File["/opt/play"]],
-  cwd => "/opt",
-  command => "/usr/bin/find /opt/play/ -perm -u+x -type f|xargs chmod a+rx"
+  target => "/home/gitlab-bridge/play-2.2.0"
 }
 
 package { "default-jdk":
@@ -42,9 +37,9 @@ package { "default-jdk":
 }
 
 exec { "package-app":
-  require => [Exec["unzip-play"], File["/opt/play"], Package["default-jdk"], User["gitlab-bridge"], Exec["fix-play-permissions"]],
+  require => [Exec["unzip-play"], File["/home/gitlab-bridge/play"], Package["default-jdk"]],
   cwd => "${app_path}",
-  command => "/opt/play/play clean compile stage",
+  command => "/home/gitlab-bridge/play/play clean compile stage",
   user => "gitlab-bridge"
 }
 
