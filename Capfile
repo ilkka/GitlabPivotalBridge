@@ -29,6 +29,7 @@ set :user,           fetch(:user, 'deploy')
 set :use_sudo,       false
 set :deploy_to,      "/opt/#{application}"
 set :prod_conf_path, "#{release_path}/conf/prod.conf"
+set :play_port,      fetch(:play_port, '9000')
 
 after "deploy", "deploy:cleanup"
 after "deploy:start", "start"
@@ -54,6 +55,7 @@ task :puppet do
   transaction do
     run "env "\
       "FACTER_app_path=#{release_path} "\
+      "FACTER_play_port=#{play_port} "\
       "#{sudo} -E puppet apply --detailed-exitcodes #{release_path}/manifests/bridge.pp; test $? -le 2"
   end
 end
