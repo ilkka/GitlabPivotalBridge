@@ -42,7 +42,7 @@ package { "default-jdk":
 }
 
 exec { "package-app":
-  require => [Exec["unzip-play"], File["/opt/play"], Package["default-jdk"], User["gitlab-bridge"]],
+  require => [Exec["unzip-play"], File["/opt/play"], Package["default-jdk"], User["gitlab-bridge"], Exec["fix-play-permissions"]],
   cwd => "${app_path}",
   command => "/opt/play/play clean compile stage",
   user => "gitlab-bridge"
