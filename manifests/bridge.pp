@@ -9,7 +9,7 @@ user { "gitlab-bridge":
   home => "/home/gitlab-bridge"
 }
 
-file { "/home/gitlab-bridge",
+file { "/home/gitlab-bridge":
   require => User["gitlab-bridge"],
   ensure => directory,
   mode => 0755,
