@@ -4,15 +4,15 @@ package { "curl":
 }
 
 user { "gitlab-bridge":
-  ensure => present
+  ensure => present,
+  groups => ["deploy"]
 }
 
 exec { "download-play":
-  require => [Package["curl"], User["gitlab-bridge"]],
-  cwd => "/home/gitlab-bridge",
+  require => [Package["curl"]],
+  cwd => "/opt",
   command => "/usr/bin/curl -O http://downloads.typesafe.com/play/2.2.0/play-2.2.0.zip",
-  creates => "/home/gitlab-bridge/play-2.2.0.zip",
-  user => "gitlab-bridge"
+  creates => "/opt/play-2.2.0.zip"
 }
 
 package { "unzip":
@@ -21,22 +21,20 @@ package { "unzip":
 
 exec { "unzip-play": 
   require => [Package["unzip"], Exec["download-play"]],
-  cwd => "/home/gitlab-bridge",
+  cwd => "/opt",
   command => "/usr/bin/unzip play-2.2.0.zip",
-  creates => "/home/gitlab-bridge/play-2.2.0",
-  user => "gitlab-bridge"
+  creates => "/opt/play-2.2.0"
 }
 
-file { "/home/gitlab-bridge/play":
+file { "/opt/play":
   ensure => link,
-  target => "/home/gitlab-bridge/play-2.2.0"
+  target => "/opt/play-2.2.0"
 }
 
-exec { "add-play-to-path":
-  require => File["/home/gitlab-bridge-play"],
-  cwd => "/home/gitlab-bridge",
-  command => "echo 'export PATH=$HOME/play:$PATH # gl-play-path-setup' >> .bashrc",
-  unless => "grep -q gl-play-path-setup .bashrc"
+exec { "package-app":
+  require => [Exec["unzip-play"], File["/opt/play"]],
+  cwd => "${app_path}",
+  command => "/opt/play/play clean compile stage"
 }
 
 file { "/etc/init/gitlabpivotalbridge.conf":

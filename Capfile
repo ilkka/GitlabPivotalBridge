@@ -11,7 +11,6 @@
 #  deploy ALL = (ALL:ALL) NOPASSWD: SETENV: /usr/bin/puppet, /sbin/start, /sbin/stop
 #
 require 'rubygems'
-require 'playframework/capistrano'
 require 'etc'
 
 load 'deploy'
