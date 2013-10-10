@@ -26,7 +26,7 @@ default_run_options[:pty] = true # should help with sudo password prompts, see h
 set :scm,    :git
 set :branch, 'master'
 
-set :user,           fetch(:user, 'gitlab-bridge')
+set :user,           fetch(:user, 'deploy')
 set :use_sudo,       false
 set :deploy_to,      "/opt/#{application}"
 set :prod_conf_path, "#{release_path}/conf/prod.conf"
