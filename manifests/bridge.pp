@@ -31,8 +31,12 @@ file { "/opt/play":
   target => "/opt/play-2.2.0"
 }
 
+package { "default-jdk":
+  ensure => installed
+}
+
 exec { "package-app":
-  require => [Exec["unzip-play"], File["/opt/play"]],
+  require => [Exec["unzip-play"], File["/opt/play"], Package["default-jdk"]],
   cwd => "${app_path}",
   command => "/opt/play/play clean compile stage"
 }
