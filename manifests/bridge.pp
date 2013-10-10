@@ -36,9 +36,10 @@ package { "default-jdk":
 }
 
 exec { "package-app":
-  require => [Exec["unzip-play"], File["/opt/play"], Package["default-jdk"]],
+  require => [Exec["unzip-play"], File["/opt/play"], Package["default-jdk"], User["gitlab-bridge"]],
   cwd => "${app_path}",
-  command => "/opt/play/play clean compile stage"
+  command => "/opt/play/play clean compile stage",
+  user => "gitlab-bridge"
 }
 
 file { "/etc/init/gitlabpivotalbridge.conf":
