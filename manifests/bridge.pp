@@ -32,3 +32,12 @@ file { "/etc/monit/conf.d/${::app_name}.conf":
    content => template("${::manifest_path}/monit.conf.erb"),
    notify => Service["monit"]
 }
+
+file { $::app_path:
+  mode => "g+w"
+}
+
+file { "${::app_path}/bin/${::app_name}":
+  mode => 755
+}
+
