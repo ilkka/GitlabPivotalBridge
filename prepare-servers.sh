@@ -15,7 +15,19 @@ for HOST in $HOSTS; do
   ssh $HOST "which puppet" || ssh -t $HOST "cd /tmp && wget http://apt.puppetlabs.com/puppetlabs-release-precise.deb && sudo dpkg -i puppetlabs-release-precise.deb && sudo apt-get update && sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y puppet"
   ssh $HOST "cat > /tmp/prepare-server.pp" <<EOF
 package { "git":
-  ensure => latest,
+  ensure => latest
+}
+package { "openjdk-7-jdk":
+  ensure => latest
+}
+package { "openjdk-6-jdk":
+  ensure => absent
+}
+package { "openjdk-6-jre":
+  ensure => absent
+}
+package { "openjdk-6-jre-headless":
+  ensure => absent
 }
 user { "deploy":
   ensure => present,
@@ -43,9 +55,12 @@ exec { "add-pubkey":
   path => ["/usr/local/sbin", "/usr/local/bin", "/usr/sbin", "/usr/bin", "/sbin", "/bin"],
   command => "cat /tmp/deploy-pubkey >> .ssh/authorized_keys"
 }
-exec { "add-sudoers-line":
-  path => ["/usr/local/sbin", "/usr/local/bin", "/usr/sbin", "/usr/bin", "/sbin", "/bin"],
-  command => "grep -q deploy-setup-tag /etc/sudoers || cp /etc/sudoers /tmp/sudoers.tmp && echo '# Automatically added, do not edit. deploy-setup-tag' >> /tmp/sudoers.tmp && echo 'deploy ALL = (ALL:ALL) NOPASSWD: SETENV: /usr/bin/puppet, /sbin/start, /sbin/stop, /sbin/restart' >> /tmp/sudoers.tmp && visudo -cf /tmp/sudoers.tmp && cp /etc/sudoers /etc/sudoers.bak && mv /tmp/sudoers.tmp /etc/sudoers && chmod 0440 /etc/sudoers"
+file { "/etc/sudoers.d/deploy-user-can-restart-services":
+  ensure => present,
+  mode => 0440,
+  owner => "root",
+  group => "root",
+  content => "deploy ALL = (ALL:ALL) NOPASSWD: SETENV: /usr/bin/puppet, /sbin/start, /sbin/stop, /sbin/restart\n"
 }
 file { "/opt":
   require => User["deploy"],
