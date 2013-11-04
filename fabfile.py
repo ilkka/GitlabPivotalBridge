@@ -18,35 +18,37 @@ env.release_dir = env.releases_dir + "/" + env.release_ts
 
 @task
 def deploy():
-  prompt("App port: ", "play_port", "9000", "\d+")
-  local("play clean compile stage")
-  with lcd("target/universal/stage"):
-    local("rm -f conf/site.conf")
-    run("mkdir -p %s" % env.release_dir)
-    with cd(env.release_dir):
-      put("*", ".")
-      run("echo %s > REVISION" % local("git rev-parse HEAD", capture=True))
-    with cd(env.basedir):
-      run("rm -f current")
-      run("ln -s %s current" % env.release_dir)
-  with settings(warn_only=True):
-    run("sudo stop %(app_name)s" % env)
-  run("mkdir -p %(shared_dir)s" % env)
-  put("manifests", env.shared_dir)
-  with cd(env.shared_dir):
-    run("""FACTER_app_name=%(app_name)s\
-           FACTER_app_path=%(release_dir)s\
-           FACTER_manifest_path=%(manifest_dir)s\
-           FACTER_play_port=%(play_port)s\
-           sudo -E puppet\
-           apply\
-           --detailed-exitcodes\
-           --modulepath %(puppet_module_dir)s\
-           %(manifest_dir)s/bridge.pp;\
-           test $? -le 2
-        """ % env)
-  with settings(warn_only=True):
-    run("sudo restart %(app_name)s" % env)
-  with cd(env.releases_dir):
-    run("ls -1|head -n -5|xargs rm -rf")
+    prompt("Pivotal Tracker API token: ", "pivotal_token")
+    prompt("App port: ", "play_port", "9000", "\d+")
+    local("play clean compile stage")
+    with lcd("target/universal/stage"):
+        local("rm -f conf/site.conf")
+        run("mkdir -p %s" % env.release_dir)
+        with cd(env.release_dir):
+            put("*", ".")
+            run("echo %s > REVISION" % local("git rev-parse HEAD", capture=True))
+        with cd(env.basedir):
+            run("rm -f current")
+            run("ln -s %s current" % env.release_dir)
+    with settings(warn_only=True):
+        run("sudo stop %(app_name)s" % env)
+    run("mkdir -p %(shared_dir)s" % env)
+    put("manifests", env.shared_dir)
+    with cd(env.shared_dir):
+        run("""FACTER_app_name=%(app_name)s\
+               FACTER_app_path=%(release_dir)s\
+               FACTER_manifest_path=%(manifest_dir)s\
+               FACTER_play_port=%(play_port)s\
+               FACTER_pivotal_token=%(pivotal_token)s\
+               sudo -E puppet\
+               apply\
+               --detailed-exitcodes\
+               --modulepath %(puppet_module_dir)s\
+               %(manifest_dir)s/bridge.pp;\
+               test $? -le 2
+            """ % env)
+    with settings(warn_only=True):
+        run("sudo restart %(app_name)s" % env)
+    with cd(env.releases_dir):
+        run("ls -1|head -n -5|xargs rm -rf")
 
