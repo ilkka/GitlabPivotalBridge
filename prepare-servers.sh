@@ -15,7 +15,19 @@ for HOST in $HOSTS; do
   ssh $HOST "which puppet" || ssh -t $HOST "cd /tmp && wget http://apt.puppetlabs.com/puppetlabs-release-precise.deb && sudo dpkg -i puppetlabs-release-precise.deb && sudo apt-get update && sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y puppet"
   ssh $HOST "cat > /tmp/prepare-server.pp" <<EOF
 package { "git":
-  ensure => latest,
+  ensure => latest
+}
+package { "openjdk-7-jdk":
+  ensure => latest
+}
+package { "openjdk-6-jdk":
+  ensure => absent
+}
+package { "openjdk-6-jre":
+  ensure => absent
+}
+package { "openjdk-6-jre-headless":
+  ensure => absent
 }
 user { "deploy":
   ensure => present,
