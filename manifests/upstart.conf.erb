@@ -8,6 +8,6 @@ respawn
 respawn limit 5 60
 
 script
-  exec sudo -u gitlab-bridge <%= @app_path %>/target/universal/stage/bin/gitlabpivotalbridge -DapplyEvolutions.default=true -Dhttp.port=<%= @play_port %>
+  exec sudo -u gitlab-bridge <%= @app_path %>/bin/gitlabpivotalbridge -DapplyEvolutions.default=true -Dhttp.port=<%= @play_port %>
 end script
 

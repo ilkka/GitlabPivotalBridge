@@ -15,7 +15,6 @@ env.release_ts = "%d%02d%02d%02d%02d%02d" % \
         (env.now.year, env.now.month, env.now.day,
         env.now.hour, env.now.minute, env.now.second)
 env.release_dir = env.releases_dir + "/" + env.release_ts
-env.git_rev_hash = local("git rev-parse HEAD", capture=True)
 
 @task
 def deploy():
@@ -26,7 +25,7 @@ def deploy():
     run("mkdir -p %s" % env.release_dir)
     with cd(env.release_dir):
       put("*", ".")
-      run("echo %s > REVISION" % env.git_rev_hash)
+      run("echo %s > REVISION" % local("git rev-parse HEAD", capture=True))
     with cd(env.basedir):
       run("rm -f current")
       run("ln -s %s current" % env.release_dir)
@@ -35,7 +34,8 @@ def deploy():
   run("mkdir -p %(shared_dir)s" % env)
   put("manifests", env.shared_dir)
   with cd(env.shared_dir):
-    run("""FACTER_app_path=%(release_dir)s\
+    run("""FACTER_app_name=%(app_name)s\
+           FACTER_app_path=%(release_dir)s\
            FACTER_manifest_path=%(manifest_dir)s\
            FACTER_play_port=%(play_port)s\
            sudo -E puppet\

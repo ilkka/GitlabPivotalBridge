@@ -1,59 +1,20 @@
 # vim: ft=puppet
-package { "curl":
-  ensure => latest
-}
-
-user { "gitlab-bridge":
+user { $::app_user:
   ensure => present,
   groups => ["deploy"],
-  home => "/home/gitlab-bridge"
+  home => "/home/${::app_user}"
 }
 
-file { "/home/gitlab-bridge":
-  require => User["gitlab-bridge"],
+file { "/home/${::app_user}":
+  require => User[$::app_user],
   ensure => directory,
   mode => 0755,
-  owner => "gitlab-bridge"
+  owner => $::app_user
 }
 
-exec { "download-play":
-  require => [Package["curl"]],
-  cwd => "/opt",
-  command => "/usr/bin/curl -O http://downloads.typesafe.com/play/2.2.0/play-2.2.0.zip",
-  creates => "/opt/play-2.2.0.zip"
-}
-
-package { "unzip":
-  ensure => latest
-}
-
-exec { "unzip-play": 
-  require => [Package["unzip"], Exec["download-play"], User["gitlab-bridge"]],
-  user => "gitlab-bridge",
-  cwd => "/home/gitlab-bridge",
-  command => "/usr/bin/unzip /opt/play-2.2.0.zip",
-  creates => "/home/gitlab-bridge/play-2.2.0"
-}
-
-file { "/home/gitlab-bridge/play":
-  ensure => link,
-  target => "/home/gitlab-bridge/play-2.2.0"
-}
-
-package { "default-jdk":
-  ensure => latest
-}
-
-exec { "package-app":
-  require => [Exec["unzip-play"], File["/home/gitlab-bridge/play"], Package["default-jdk"]],
-  cwd => "${app_path}",
-  command => "/home/gitlab-bridge/play/play clean compile stage",
-  user => "gitlab-bridge"
-}
-
-file { "/etc/init/gitlabpivotalbridge.conf":
+file { "/etc/init/${::app_name}.conf":
   ensure => file,
-  content => template("${app_path}/manifests/upstart.conf.erb")
+  content => template("${::manifest_path}/upstart.conf.erb")
 }
 
 package { "monit":
@@ -66,8 +27,8 @@ service { "monit":
   require => Package["monit"]
 }
 
-file { "/etc/monit/conf.d/gitlabpivotalbridge.conf":
+file { "/etc/monit/conf.d/${::app_name}.conf":
    ensure => file,
-   content => template("${app_path}/manifests/monit.conf.erb"),
+   content => template("${::manifest_path}/monit.conf.erb"),
    notify => Service["monit"]
 }

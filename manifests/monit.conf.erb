@@ -1,7 +1,7 @@
 check host <%= @application %> with address 127.0.0.1
-        start "/sbin/start gitlabpivotalbridge"
-        stop "/sbin/stop gitlabpivotalbridge"
+        start "/sbin/start <%= @app_name %>"
+        stop "/sbin/stop <%= @app_name %>"
         if failed port <%= @play_port %> protocol HTTP
                 request /
-                with timeout 5 seconds
+                with timeout 60 seconds
                 then restart
